@@ -1,6 +1,5 @@
 (function (window) {
 
-  const CalfPrototype = {};
   const dataChangeHandles = {};
 
   /**
@@ -8,44 +7,36 @@
    * @type {{}}
    */
   const ObserveVm = {};
-  const obDict = {};    //响应式对象设置|获取值的存储.
+
   /**
    * 绑定数据（数据对象转换成响应式对象）
    */
   function genObserve(data, ObserveObj) {
 
     let obObj = ObserveObj ? ObserveObj : ObserveVm;
-
     const keyValues = Object.entries(data);
     keyValues.forEach(function (kv) {
-
       let key = kv[0], value = kv[1];
-      let dataKey = ObserveObj ? '' : key;
-
       Object.defineProperty(obObj, key, {
         set: function (newValue) {
-
-          if (obDict[dataKey] !== newValue) {
-            obDict[dataKey] = newValue;
-
-            if (typeof dataChangeHandles[key] === 'function') {
-              dataChangeHandles[key](newValue);
-            } else if (Array.isArray(dataChangeHandles[key])) {
-              dataChangeHandles[key].forEach(function (cb) {
+          if (obObj['_$' + key] !== newValue) {
+            obObj['_$' + key] = newValue;
+            if (typeof dataChangeHandles[key + '-set'] === 'function') {
+              dataChangeHandles[key + '-set'](newValue);
+            } else if (Array.isArray(dataChangeHandles[key + '-set'])) {
+              dataChangeHandles[key + '-set'].forEach(function (cb) {
                 cb(newValue);
               });
             }
 
           }
-
         },
         get: function () {
-          return obDict[dataKey];
+          return obObj['_$' + key];
         }
       });
 
       if (typeof value === 'object') {
-
         genObserve(value, ObserveVm[key]);
       }
       obObj[key] = value;
@@ -57,23 +48,40 @@
   }
 
   /**
-   * 生成dom树对象
-   * @param sourceNode Calf挂载元素
-   * @returns {{tagName: string, sourceNode: *, children: Array}}
+   * 遍历dom节点
+   * @param sourceNode
    */
   function genDomTree(sourceNode) {
-    let CalfElement = {
-      tagName: sourceNode.tagName,
-      sourceNode: sourceNode,
-      children: [],
-    };
+    let mustacheNodes = {};
 
-    sourceNode.children.forEach(function (element) {
-      let child = genDomTree(element);
-      CalfElement.children.push(child);
+    sourceNode.childNodes.forEach(function (element) {
+      switch(element.nodeType){
+        case 3:
+          const text = element.nodeValue.trim();
+
+          let resultArray = Utils.mustach(text);
+          // resultArray.keies
+          if(resultArray.keies && resultArray.keies.length){
+
+            resultArray.keies.forEach(function(propertyKey){
+              let setHandles = dataChangeHandles[propertyKey + '-set'] = dataChangeHandles[propertyKey + '-set'] || [];
+              setHandles.push(function(newValue){
+                let newText = Utils.joinMustach(propertyKey,newValue,resultArray.result);
+                element.replaceData(0,element.data.length,newText);
+              });
+            });
+
+          }
+
+          break;
+        case 1:
+          genDomTree(element);
+          break;
+      }
     });
-    return CalfElement;
+
   }
+
 
   /**
    * calf 实例
@@ -83,11 +91,14 @@
   window.Calf = function (params) {
     const sourceNode = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.$el = sourceNode;
-    let domTree = genDomTree(sourceNode);
-    this.data = genObserve(params.data);
+    genDomTree(sourceNode);
+
+    const observeData = genObserve(params.data);
+    Object.assign(window.Calf.prototype,observeData);
+
+    params.mounted.call(this);
   };
 
-  window.Calf.prototype = CalfPrototype;
 
 
 })(window);
