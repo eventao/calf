@@ -1,7 +1,8 @@
 (function (window) {
 
   const dataChangeHandles = {};
-
+  let mustacheNodes = {};
+  let vNodes = [];
   /**
    * 根据对象配置getter/setter
    * @type {{}}
@@ -25,7 +26,7 @@
               dataChangeHandles[key + '-set'](newValue);
             } else if (Array.isArray(dataChangeHandles[key + '-set'])) {
               dataChangeHandles[key + '-set'].forEach(function (cb) {
-                cb(newValue);  //  {{sdfdsfds}}   sd sdfds sd   {{sdfds}}
+                cb(newValue);
               });
             }
 
@@ -35,19 +36,36 @@
           return obObj['_$' + key];
         }
       });
-
       if (typeof value === 'object') {
         genObserve(value, ObserveVm[key]);
       }
       obObj[key] = value;
 
     });
-
-
     return ObserveVm;
   }
 
-  let mustacheNodes = [];
+  /**
+   * 监听响应式对象发生变化
+   */
+  function listenDataChange(data){
+    const keyValues = Object.entries(data);
+    keyValues.forEach(function (kv) {
+
+      let key = kv[0], value = kv[1];
+      let handles = dataChangeHandles[key + '-set'] = dataChangeHandles[key + '-set'] || [];
+      handles.push(function(newValue){
+        if(mustacheNodes[key]){
+          mustacheNodes[key].forEach(vNode => {
+            console.log(vNode);
+          });
+        }
+      });
+
+    });
+    return ObserveVm;
+  }
+
   /**
    * 遍历dom节点
    * @param sourceNode
@@ -57,25 +75,20 @@
       switch(element.nodeType){
         case 3:
           const text = element.nodeValue.trim();
-
           let resultArray = Utils.mustach(text);
-          if(resultArray.keies && resultArray.keies.length){
-            mustacheNodes.push({
-              element,
-              keies:resultArray.keies,
-              pieces:resultArray.result,
-            });
+          const vNode = {
+            element,
+            keies:resultArray.keies,
+            pieces:resultArray.result,
+            prevPieces:resultArray.result
+          };
+          vNodes.push(vNode);
 
-            /**
-             *
-              resultArray.keies.forEach(function(propertyKey){
-                let setHandles = dataChangeHandles[propertyKey + '-set'] = dataChangeHandles[propertyKey + '-set'] || [];
-                setHandles.push(function(newValue){
-                  let newText = Utils.joinMustach(propertyKey,newValue,resultArray.result);
-                  element.replaceData(0,element.data.length,newText);
-                });
-              });
-             */
+          if(resultArray.keies && resultArray.keies.length){
+            resultArray.keies.forEach(key => {
+              mustacheNodes[key] = mustacheNodes[key] || [];
+              mustacheNodes[key].push(vNode);
+            });
 
           }
 
@@ -85,9 +98,7 @@
           break;
       }
     });
-
   }
-
 
   /**
    * calf 实例
@@ -98,16 +109,13 @@
     const sourceNode = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.$el = sourceNode;
     genDomTree(sourceNode);
-    console.log(mustacheNodes,'vNodes');
     genObserve(params.data);
-
+    listenDataChange(params.data);
     params.mounted.call(this);
   };
 
 
 
 })(window);
-
-
 
 
