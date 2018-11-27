@@ -1,10 +1,14 @@
 (function(){
-  HTMLCollection.prototype.forEach = function(cb){
+
+  let forEach = function(cb){
     const that = this;
     for(let i = 0; i < that.length; i++){
-      cb(that.item(i));
+      cb(that.item(i),i);
     }
   };
+
+  HTMLCollection.prototype.forEach = forEach;
+  NodeList.prototype.forEach = forEach;
 
   if(!Object.entries){
     Object.entries = function(obj ){

@@ -23,10 +23,10 @@
           if (obObj['_$' + key] !== newValue) {
             obObj['_$' + key] = newValue;
             if (typeof dataChangeHandles[key + '-set'] === 'function') {
-              dataChangeHandles[key + '-set'](newValue);
+              dataChangeHandles[key + '-set'](newValue,key);
             } else if (Array.isArray(dataChangeHandles[key + '-set'])) {
               dataChangeHandles[key + '-set'].forEach(function (cb) {
-                cb(newValue);
+                cb(newValue,key);
               });
             }
 
@@ -42,6 +42,25 @@
       obObj[key] = value;
 
     });
+
+    /**
+     * 测试代码
+     */
+    (function testFrame(){
+      let persones = ['小明','小亮','小王','小猪','小毛','小花'];
+      let thins = ['吃饭','睡','饿','开心','过去','回来'];
+      let r1 = Math.random();
+      let nameI = Math.floor(r1 * persones.length);
+      obObj.message = persones[nameI];
+
+
+      let thingI = Math.floor(Math.random() * thins.length);
+      obObj.tudo = thins[thingI];
+
+
+      setTimeout(testFrame,1500);
+    })();
+
     return ObserveVm;
   }
 
@@ -54,10 +73,28 @@
 
       let key = kv[0], value = kv[1];
       let handles = dataChangeHandles[key + '-set'] = dataChangeHandles[key + '-set'] || [];
-      handles.push(function(newValue){
-        if(mustacheNodes[key]){
-          mustacheNodes[key].forEach(vNode => {
-            console.log(vNode);
+      handles.push(function(newValue,dataKey){
+        if(mustacheNodes[dataKey]){
+          mustacheNodes[dataKey].forEach(function(vNode){
+
+            if(vNode.pieces && vNode.pieces.length){
+              let prevPieces = [];
+              vNode.pieces.forEach(function(item,j){
+
+                if(typeof item === 'object' && item.propertyKey === dataKey){
+                  prevPieces.push(newValue);
+                }else{
+                  prevPieces.push(vNode.prevPieces[j]);
+                }
+              });
+              if(prevPieces.length){
+                vNode.prevPieces = prevPieces;
+                vNode.element.nodeValue = prevPieces.join('');
+              }
+            }
+
+
+
           });
         }
       });
