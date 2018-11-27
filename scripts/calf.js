@@ -25,7 +25,7 @@
               dataChangeHandles[key + '-set'](newValue);
             } else if (Array.isArray(dataChangeHandles[key + '-set'])) {
               dataChangeHandles[key + '-set'].forEach(function (cb) {
-                cb(newValue);
+                cb(newValue);  //  {{sdfdsfds}}   sd sdfds sd   {{sdfds}}
               });
             }
 
@@ -47,29 +47,35 @@
     return ObserveVm;
   }
 
+  let mustacheNodes = [];
   /**
    * 遍历dom节点
    * @param sourceNode
    */
   function genDomTree(sourceNode) {
-    let mustacheNodes = {};
-
     sourceNode.childNodes.forEach(function (element) {
       switch(element.nodeType){
         case 3:
           const text = element.nodeValue.trim();
 
           let resultArray = Utils.mustach(text);
-          // resultArray.keies
           if(resultArray.keies && resultArray.keies.length){
-
-            resultArray.keies.forEach(function(propertyKey){
-              let setHandles = dataChangeHandles[propertyKey + '-set'] = dataChangeHandles[propertyKey + '-set'] || [];
-              setHandles.push(function(newValue){
-                let newText = Utils.joinMustach(propertyKey,newValue,resultArray.result);
-                element.replaceData(0,element.data.length,newText);
-              });
+            mustacheNodes.push({
+              element,
+              keies:resultArray.keies,
+              pieces:resultArray.result,
             });
+
+            /**
+             *
+              resultArray.keies.forEach(function(propertyKey){
+                let setHandles = dataChangeHandles[propertyKey + '-set'] = dataChangeHandles[propertyKey + '-set'] || [];
+                setHandles.push(function(newValue){
+                  let newText = Utils.joinMustach(propertyKey,newValue,resultArray.result);
+                  element.replaceData(0,element.data.length,newText);
+                });
+              });
+             */
 
           }
 
@@ -92,9 +98,8 @@
     const sourceNode = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.$el = sourceNode;
     genDomTree(sourceNode);
-
-    const observeData = genObserve(params.data);
-    Object.assign(window.Calf.prototype,observeData);
+    console.log(mustacheNodes,'vNodes');
+    genObserve(params.data);
 
     params.mounted.call(this);
   };
