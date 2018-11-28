@@ -9,6 +9,7 @@
 
   HTMLCollection.prototype.forEach = forEach;
   NodeList.prototype.forEach = forEach;
+  NamedNodeMap.prototype.forEach = forEach;
 
   if(!Object.entries){
     Object.entries = function(obj ){

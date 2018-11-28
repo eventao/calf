@@ -9,6 +9,18 @@
    */
   const ObserveVm = {};
 
+  //指令
+  const directives = [];
+  //系统指令绑定
+  const sysDirBind = {};
+  sysDirBind['c-model'] = function(value,element){
+    element.oninput = function(){
+
+    };
+  };
+  const sysDirObHandles = {};
+
+
   /**
    * 绑定数据（数据对象转换成响应式对象）
    */
@@ -75,8 +87,14 @@
 
           });
         }
-      });
 
+        if(sysDirObHandles[dataKey]){
+          sysDirObHandles[dataKey].forEach(function(vNode){
+
+          });
+        }
+
+      });
     });
     return ObserveVm;
   }
@@ -100,6 +118,7 @@
   function genDomTree(sourceNode) {
     sourceNode.childNodes.forEach(function (element) {
       switch(element.nodeType){
+        //文本节点解析
         case 3:
           const text = element.nodeValue.trim();
           let resultArray = Utils.mustach(text);
@@ -120,7 +139,14 @@
           }
 
           break;
+
+        //元素解析
         case 1:
+          if(element.attributes.length){
+            element.attributes.forEach(function(attr){
+              sysDirBind[attr.name](value,element);
+            });
+          }
           genDomTree(element);
           break;
       }
@@ -139,19 +165,35 @@
     genObserve(params.data);
     listenDataChange(params.data);
     dataInitValue(params.data);
-
     if(params.methods){
       Object.keys(params.methods).forEach(function(key){
         ObserveVm[key] = params.methods[key];
       });
     }
-
     params.mounted.call(ObserveVm);
   };
 
+  //定义指令
   window.Calf.directive = function(name,param){
-
+    directives.push({
+      name,
+      param
+    });
   };
+
+  //region 系统指令定义
+  Calf.directive('if',{
+    bind:function(el,binding,vnode){
+
+    }
+  });
+
+  Calf.directive('model',{
+    bind:function(el,binding,vnode){
+
+    }
+  });
+  //endregion
 
 })(window);
 
