@@ -182,13 +182,13 @@
   };
 
   //region 系统指令定义
-  Calf.directive('if',{
+  Calf.directive('c-if',{
     bind:function(el,binding,vnode){
 
     }
   });
 
-  Calf.directive('model',{
+  Calf.directive('c-model',{
     bind:function(el,binding,vnode){
 
     }
