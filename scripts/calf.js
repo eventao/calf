@@ -147,6 +147,9 @@
     }
 
     params.mounted.call(ObserveVm);
+  };
+
+  window.Calf.directive = function(name,param){
 
   };
 
