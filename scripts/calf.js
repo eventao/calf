@@ -18,6 +18,7 @@
     const keyValues = Object.entries(data);
     keyValues.forEach(function (kv) {
       let key = kv[0], value = kv[1];
+
       Object.defineProperty(obObj, key, {
         set: function (newValue) {
           if (obObj['_$' + key] !== newValue) {
@@ -43,25 +44,7 @@
 
     });
 
-    /**
-     * 测试代码
-     */
-    (function testFrame(){
-      let persones = ['小明','小亮','小王','小猪','小毛','小花'];
-      let thins = ['吃饭','睡','饿','开心','过去','回来'];
-      let r1 = Math.random();
-      let nameI = Math.floor(r1 * persones.length);
-      obObj.message = persones[nameI];
 
-
-      let thingI = Math.floor(Math.random() * thins.length);
-      obObj.tudo = thins[thingI];
-
-
-      setTimeout(testFrame,1500);
-    })();
-
-    return ObserveVm;
   }
 
   /**
@@ -148,7 +131,18 @@
     genDomTree(sourceNode);
     genObserve(params.data);
     listenDataChange(params.data);
-    params.mounted.call(this);
+
+    if(params.methods){
+      Object.keys(params.methods).forEach(function(key){
+        ObserveVm[key] = params.methods[key];
+      });
+
+    }
+
+
+    params.mounted.call(ObserveVm);
+
+
   };
 
 
