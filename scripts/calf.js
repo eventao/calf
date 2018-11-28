@@ -40,10 +40,8 @@
       if (typeof value === 'object') {
         genObserve(value, ObserveVm[key]);
       }
-      obObj[key] = value;
 
     });
-
 
   }
 
@@ -54,7 +52,7 @@
     const keyValues = Object.entries(data);
     keyValues.forEach(function (kv) {
 
-      let key = kv[0], value = kv[1];
+      let key = kv[0];
       let handles = dataChangeHandles[key + '-set'] = dataChangeHandles[key + '-set'] || [];
       handles.push(function(newValue,dataKey){
         if(mustacheNodes[dataKey]){
@@ -63,7 +61,6 @@
             if(vNode.pieces && vNode.pieces.length){
               let prevPieces = [];
               vNode.pieces.forEach(function(item,j){
-
                 if(typeof item === 'object' && item.propertyKey === dataKey){
                   prevPieces.push(newValue);
                 }else{
@@ -76,14 +73,24 @@
               }
             }
 
-
-
           });
         }
       });
 
     });
     return ObserveVm;
+  }
+
+  /**
+   * 数据初始化
+   */
+  function dataInitValue(data){
+
+    const keyValues = Object.entries(data);
+    keyValues.forEach(function (kv) {
+      let key = kv[0];
+      ObserveVm[key] = kv[1];
+    });
   }
 
   /**
@@ -131,22 +138,17 @@
     genDomTree(sourceNode);
     genObserve(params.data);
     listenDataChange(params.data);
+    dataInitValue(params.data);
 
     if(params.methods){
       Object.keys(params.methods).forEach(function(key){
         ObserveVm[key] = params.methods[key];
       });
-
     }
-
 
     params.mounted.call(ObserveVm);
 
-
   };
 
-
-
 })(window);
-
 

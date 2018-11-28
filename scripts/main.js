@@ -5,7 +5,7 @@ const calf = new Calf({
     tudo: '吃饭',
   },
   mounted:function(){
-    this.testFrame();
+    //this.testFrame();
   },
   methods:{
     testFrame(){
@@ -21,7 +21,7 @@ const calf = new Calf({
 
       setTimeout(function(){
         that.testFrame();
-      },200);
+      },1500);
     }
   }
 });
