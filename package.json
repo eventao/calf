@@ -1,20 +1,9 @@
 {
   "name": "calf",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "dependencies": {},
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eventao/calf.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/eventao/calf/issues"
-  },
-  "homepage": "https://github.com/eventao/calf#readme"
+  "repository": "https://github.com/eventao/calf.git",
+  "author": "even",
+  "license": "MIT"
 }

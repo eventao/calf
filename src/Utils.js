@@ -1,6 +1,6 @@
-window.Utils = {
-  mustach:function(text){
 
+export class Utils{
+  static mustach(text){
     const result = [],keies = [];
     if(text && text.indexOf('{{') > -1){
 
@@ -29,8 +29,9 @@ window.Utils = {
       keies,
       result
     };
-  },
-  joinMustach:function(key,value,formatArray){
+  }
+
+  static joinMustach(key,value,formatArray){
     let result = [];
     formatArray.forEach(item => {
       if(typeof item === 'object' && item.propertyKey === key){
@@ -40,8 +41,6 @@ window.Utils = {
       }
     });
     return result.join('');
-
   }
 
-
-};
+}

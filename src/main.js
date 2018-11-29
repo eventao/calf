@@ -1,5 +1,6 @@
+import {Calf} from './Calf';
 
-const calf = new Calf({
+new Calf({
   el: '#app',
   data: {
     message: 'hello world!',
@@ -26,4 +27,3 @@ const calf = new Calf({
     }
   }
 });
-
