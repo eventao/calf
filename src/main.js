@@ -7,7 +7,7 @@ new Calf({
     tudo: '吃饭',
   },
   mounted:function(){
-    //this.testFrame();
+    this.testFrame();
   },
   methods:{
     testFrame(){

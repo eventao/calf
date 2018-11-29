@@ -47,9 +47,7 @@ export class Calf{
               that.mustacheNodes[key] = that.mustacheNodes[key] || [];
               that.mustacheNodes[key].push(vNode);
             });
-
           }
-
           break;
 
         //元素节点解析
@@ -73,12 +71,9 @@ export class Calf{
                         value:attr.value
                       },{});
                     }
-
                   }
-
                 }
               });
-
             });
           }
           this.genDomTree(element);
@@ -123,7 +118,7 @@ export class Calf{
   }
 
   listenDataChange(data){
-    const that = this,keyValues =Object.entries(data);
+    const that = this,keyValues = Object.entries(data);
     keyValues.forEach(kv => {
 
       let key = kv[0];
@@ -149,7 +144,6 @@ export class Calf{
 
           });
         }
-
 
       });
     });
