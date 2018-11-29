@@ -11,14 +11,6 @@
 
   //指令
   const directives = [];
-  //系统指令绑定
-  const sysDirBind = {};
-  sysDirBind['c-model'] = function(value,element){
-    element.oninput = function(){
-
-    };
-  };
-  const sysDirObHandles = {};
 
 
   /**
@@ -88,11 +80,6 @@
           });
         }
 
-        if(sysDirObHandles[dataKey]){
-          sysDirObHandles[dataKey].forEach(function(vNode){
-
-          });
-        }
 
       });
     });
@@ -140,11 +127,33 @@
 
           break;
 
-        //元素解析
+        //元素节点解析
         case 1:
           if(element.attributes.length){
             element.attributes.forEach(function(attr){
-              sysDirBind[attr.name](value,element);
+
+              directives.filter(function(dire){
+                if(dire.name === attr.name){
+                  if(dire.param){
+
+                    if(dire.param.bind){
+                      dire.param.bind(element,{
+                        name:attr.name,
+                        value:attr.value
+                      },{});
+                    }
+                    if(dire.param.inserted){
+                      dire.param.inserted(element,{
+                        name:attr.name,
+                        value:attr.value
+                      },{});
+                    }
+
+                  }
+
+                }
+              });
+
             });
           }
           genDomTree(element);
@@ -190,6 +199,9 @@
 
   Calf.directive('c-model',{
     bind:function(el,binding,vnode){
+
+    },
+    inserted:function(el,binding,vnode){
 
     }
   });
