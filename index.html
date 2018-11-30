@@ -8,12 +8,20 @@
 </head>
 <body>
     <div id="app">
-        <div>
-            Hi{{message}},{{tudo}}了吗
-        </div>
-        <div>
-            <input type="text" c-model="message" title>
-        </div>
+        <h1>
+            {{pageTitle}}
+        </h1>
+
+        <h2>
+            {{secondaryTitle}}
+        </h2>
+
+        <p>
+            <input type="text" c-model="secondaryTitle" title>
+        </p>
+        <p>{{aSay}}：现在几点了?</p>
+        <p>{{bSay}}：现在时间是：{{timer}}</p>
+
     </div>
     <script src="./src/main.js"></script>
 

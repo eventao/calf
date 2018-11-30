@@ -1,13 +1,14 @@
 import './polyfill';
 import {Utils} from './Utils.js';
+import {Directive} from './Directive';
 
 export class Calf{
   constructor(params){
     this.ObserveVm = {};
     this.vNodes = [];
-    this.directives = [];
     this.dataChangeHandles = {};
     this.mustacheNodes = {};
+    this.gendirective = new Directive();
 
     const sourceNode = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.$el = sourceNode;
@@ -23,7 +24,6 @@ export class Calf{
       });
     }
     params.mounted.call(this.ObserveVm);
-
   }
 
   genDomTree(sourceNode) {
@@ -53,27 +53,8 @@ export class Calf{
         //元素节点解析
         case 1:
           if(element.attributes.length){
-            element.attributes.forEach((attr) => {
-
-              this.directives.filter(function(dire){
-                if(dire.name === attr.name){
-                  if(dire.param){
-
-                    if(dire.param.bind){
-                      dire.param.bind(element,{
-                        name:attr.name,
-                        value:attr.value
-                      },{});
-                    }
-                    if(dire.param.inserted){
-                      dire.param.inserted(element,{
-                        name:attr.name,
-                        value:attr.value
-                      },{});
-                    }
-                  }
-                }
-              });
+            element.attributes.forEach(attr => {
+              this.gendirective.mapDirectElement(element,attr);
             });
           }
           this.genDomTree(element);
@@ -124,6 +105,8 @@ export class Calf{
       let key = kv[0];
       let handles = that.dataChangeHandles[key + '-set'] = that.dataChangeHandles[key + '-set'] || [];
       handles.push(function(newValue,dataKey){
+
+        // mustache绑定数据变化
         if(that.mustacheNodes[dataKey]){
           that.mustacheNodes[dataKey].forEach(function(vNode){
 
@@ -145,6 +128,9 @@ export class Calf{
           });
         }
 
+        // 指令绑定数据变化
+        that.gendirective.dataUpdate(dataKey,newValue);
+
       });
     });
   }
@@ -156,6 +142,26 @@ export class Calf{
       let key = kv[0];
       that.ObserveVm[key] = kv[1];
     });
+    that.gendirective.domChangeToObserve(that.ObserveVm);
+  }
+
+  static directive(name,params){
+    Directive.prototype.directives = Directive.prototype.directives || {};
+    Directive.prototype.directives[name] = params;
   }
 
 }
+
+Calf.directive('c-model',{
+  bind:function(el,binding,vNode){
+    el.value = binding.value;
+  },
+  inserted:function(el){},
+  eventInit:function(els,dataKey,vm){
+    els.forEach(el => {
+      el.oninput = function(event){
+        vm[dataKey] = event.target.value;
+      };
+    });
+  }
+});

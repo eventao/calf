@@ -5,5 +5,8 @@
   "main": "index.js",
   "repository": "https://github.com/eventao/calf.git",
   "author": "even",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.2.1"
+  }
 }
