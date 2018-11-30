@@ -23,7 +23,8 @@
         <p>{{bSay}}：现在时间是：{{timer}}</p>
 
         <div>
-            <p >
+            <p c-for="student of students">
+                {{student.name}}&nbsp;&nbsp;{{student.gender}}
             </p>
         </div>
 

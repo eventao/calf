@@ -1,6 +1,6 @@
 import './polyfill';
 import {Utils} from './Utils.js';
-import {Directive} from './Directive';
+import {Directive} from './Directive.js';
 
 export class Calf{
   constructor(params){
@@ -91,6 +91,7 @@ export class Calf{
           return obObj['_$' + key];
         }
       });
+
       if (typeof value === 'object') {
         if(Array.isArray(value)){
 
@@ -144,6 +145,7 @@ export class Calf{
     const that = this;
     const keyValues = Object.entries(data);
     keyValues.forEach(function (kv) {
+
       let key = kv[0];
       that.ObserveVm[key] = kv[1];
     });
@@ -180,7 +182,7 @@ Calf.directive('c-model',{
   }
 });
 
-Calf.directive('v-for',{
+Calf.directive('c-for',{
   bind:function(el,binding,vNode){
     el.value = binding.value;
   },
