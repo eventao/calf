@@ -8,7 +8,7 @@ export class Calf{
     this.vNodes = [];
     this.dataChangeHandles = {};
     this.mustacheNodes = {};
-    this.gendirective = new Directive();
+    this.gendirective = new Directive(Calf);
 
     const sourceNode = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.$el = sourceNode;
@@ -64,8 +64,9 @@ export class Calf{
   }
 
   genObserve(data, ObserveObj) {
-    let obObj = ObserveObj ? ObserveObj : this.ObserveVm;
     const that = this;
+
+    let obObj = ObserveObj ? ObserveObj : this.ObserveVm;
     const keyValues = Object.entries(data);
     keyValues.forEach((kv) => {
       let key = kv[0], value = kv[1];
@@ -91,7 +92,11 @@ export class Calf{
         }
       });
       if (typeof value === 'object') {
-        genObserve(value, this.ObserveVm[key]);
+        if(Array.isArray(value)){
+
+        }else{
+          that.genObserve(value, this.ObserveVm[key]);
+        }
       }
 
     });
@@ -150,9 +155,32 @@ export class Calf{
     Directive.prototype.directives[name] = params;
   }
 
+  /**
+   * 创建组件
+   * @param name
+   * @param params
+   */
+  static component(name,params){
+
+  }
+
 }
 
 Calf.directive('c-model',{
+  bind:function(el,binding,vNode){
+    el.value = binding.value;
+  },
+  inserted:function(el){},
+  eventInit:function(els,dataKey,vm){
+    els.forEach(el => {
+      el.oninput = function(event){
+        vm[dataKey] = event.target.value;
+      };
+    });
+  }
+});
+
+Calf.directive('v-for',{
   bind:function(el,binding,vNode){
     el.value = binding.value;
   },

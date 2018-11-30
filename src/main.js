@@ -1,4 +1,5 @@
 import {Calf} from './Calf';
+import {Footer} from './demo/conpunents/footer'
 
 new Calf({
   el: '#app',
@@ -8,6 +9,18 @@ new Calf({
     timer:'',
     pageTitle:'mvvm test',
     secondaryTitle:'双向绑定测试!',
+
+    students:[
+      {
+        name:'刘晓华',
+        gender:'男'
+      },
+      {
+        name:'小菊',
+        gender:'女'
+      }
+    ]
+    
   },
   mounted:function(){
     this.testFrame();
@@ -46,5 +59,8 @@ new Calf({
       },1);
 
     }
+  },
+  components:{
+    Footer
   }
 });

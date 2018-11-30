@@ -8,5 +8,9 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": "^3.2.1"
+  },
+  "scripts":{
+    "start":"parcel index.html",
+    "build": "parcel build index.html --public-url ./ -d build"
   }
 }
