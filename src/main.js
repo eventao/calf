@@ -1,7 +1,7 @@
 import {Calf} from './Calf';
 import {Footer} from './demo/conpunents/footer'
 
-new Calf({
+window.winCalf = new Calf({
   el: '#app',
   data: {
     aSay: '',
@@ -9,7 +9,10 @@ new Calf({
     timer:'',
     pageTitle:'mvvm test',
     secondaryTitle:'双向绑定测试!',
-
+    avatar:{
+      size1:'',
+      size2:'',
+    },
     students:[
       {
         name:'刘晓华',
@@ -38,9 +41,14 @@ new Calf({
       let thingI = Math.floor(Math.random() * thins.length);
       this.bSay = thins[thingI];
 
+      this.avatar.size1 = '23232';
+      this.avatar.size2 = '2slkfdlsfjsl2';
+
+      /** 
       setTimeout(function(){
         that.testFrame();
       },2500);
+      */
     },
     timerRun(){
       const that = this;
@@ -53,10 +61,12 @@ new Calf({
         s = now.getSeconds(),
         ms = now.getMilliseconds();
 
+      /** 
       this.timer = `${y}-${mon}-${d} ${h}:${m}:${s} ${ms}`;
       setTimeout(function(){
         that.timerRun();
       },1);
+      */
 
     }
   },
