@@ -22,11 +22,14 @@
         <p>{{aSay}}：现在几点了?</p>
         <p>{{bSay}}：现在时间是：{{timer}}</p>
 
-        <div>
-            当前用户:{{user.name}}-{{user.age}}
-        </div>
 
         <div>
+            <p>
+                当前用户:{{user.name}}-{{user.age}}
+            </p>
+            <p>
+                {{avatar.size1}}&nbsp;&nbsp;{{avatar.size2}}
+            </p>
             <p c-for="student of students">
                 {{student.name}}&nbsp;&nbsp;{{student.gender}}
             </p>

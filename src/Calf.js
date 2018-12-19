@@ -24,6 +24,9 @@ export class Calf{
       });
     }
     params.mounted.call(this.ObserveVm);
+
+    console.log(this.ObserveVm);
+
   }
 
   genDomTree(sourceNode) {
@@ -63,7 +66,7 @@ export class Calf{
     });
   }
 
-  genObserve(data, ObserveObj) {
+  genObserve(data, ObserveObj,parentKey) {
     const that = this;
 
     let obObj = ObserveObj ? ObserveObj : this.ObserveVm;
@@ -71,12 +74,15 @@ export class Calf{
     keyValues.forEach((kv) => {
       let key = kv[0], value = kv[1];
 
+      let privateParaKey = '_$' + (parentKey ? (parentKey+'.'):'') + key;
+
       Object.defineProperty(obObj, key, {
         set: function (newValue) {
-          if (obObj['_$' + key] !== newValue) {
-            obObj['_$' + key] = newValue;
+          if (obObj[privateParaKey] !== newValue) {
+            obObj[privateParaKey] = newValue;
 
-            const setHandle = that.dataChangeHandles[key + '-set'];
+            let changeHandleKey = parentKey?(parentKey+'.'):'' + key + '-set';
+            const setHandle = that.dataChangeHandles[changeHandleKey];
             if (typeof setHandle === 'function') {
               setHandle(newValue,key);
             } else if (Array.isArray(setHandle)) {
@@ -88,7 +94,7 @@ export class Calf{
           }
         },
         get: function () {
-          return obObj['_$' + key];
+          return obObj[privateParaKey];
         }
       });
 
@@ -96,12 +102,12 @@ export class Calf{
         if(Array.isArray(value)){
 
         }else{
-          that.genObserve(value, this.ObserveVm[key]);
+          this.ObserveVm[key] = this.ObserveVm[key] || {};
+          that.genObserve(value, this.ObserveVm[key],key);
         }
       }
 
     });
-
   }
 
   listenDataChange(data){
