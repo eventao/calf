@@ -7,12 +7,17 @@
 
 'use strict';
 
-let express = require('express');
-let app = express();
+const express = require('express'),
+  app = express(),
+  router = express.Router(),
+  routerConfig = require('./routeres/router-config');
 
-app.use('/',express.static(__dirname));
+routerConfig.config(router);
+
+app.use('/', express.static(__dirname));
+app.use('/',router);
 
 let port = 8088;
-app.listen(port,() => {
-    console.log(`server on ${port}`);
+app.listen(port, () => {
+  console.log(`server on ${port}`);
 });
