@@ -14,7 +14,7 @@
       data.forEach(item => {
         let slices = item.num.split('/');
         let s = slices[slices.length - 2];
-        result.push(s);
+        result.push(`'${s}'`);
       });
       console.log(result.join(','));
     };
