@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    let xhr = new XMLHttpRequest();
+    xhr.open('get','./num.json');
+    xhr.onload = function(){
+      let result = [];
+      let data = JSON.parse(xhr.responseText);
+      data.forEach(item => {
+        let slices = item.num.split('/');
+        let s = slices[slices.length - 2];
+        result.push(s);
+      });
+      console.log(result.join(','));
+    };
+    xhr.send();
+
+</script>
+</body>
+</html>
