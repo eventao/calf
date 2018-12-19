@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <title>音乐来了</title>
     <style>
+        .page-container{
+            width:720px;
+            padding:10px;
+            display:flex;
+            margin: 50px auto;
+            justify-content: space-between;
+            box-shadow:5px 5px 20px 1px rgba(0,0,0,0.4);
+            border-radius:5px;
+        }
         .player-wrapper {
             width: 300px;
             height: auto;
-            position: relative;
-            margin: 50px auto;
         }
 
         .player-wrapper .tool {
@@ -31,15 +38,12 @@
             width: 383px;
             height: 500px;
             overflow-y: auto;
-            position: absolute;
-            right: -410px;
-            top: 0;
             font-size: 12px;
         }
 
         .item-song {
             padding: 5px 10px;
-            cursor:pointer;
+            cursor: pointer;
         }
 
         .item-song.current {
@@ -50,22 +54,23 @@
 </head>
 <body>
 
-<div class="player-wrapper">
-    <div class="current-title"></div>
-    <audio src="" id="player" controls autoplay>
-    </audio>
-    <div class="tool">
-        <button onclick="musicSwitch(-1)">
-            上一首
-        </button>
-        <button onclick="musicSwitch(1)">
-            下一首
-        </button>
+<div class="page-container">
+    <div class="player-wrapper">
+        <div class="current-title"></div>
+        <audio src="" id="player" controls autoplay>
+        </audio>
+        <div class="tool">
+            <button onclick="musicSwitch(-1)">
+                上一首
+            </button>
+            <button onclick="musicSwitch(1)">
+                下一首
+            </button>
+        </div>
     </div>
 
     <div class="play-list">
     </div>
-
 </div>
 
 <script>
@@ -86,7 +91,7 @@
 
   function showList() {
     let listHtml = [];
-    musicList.forEach((item,i) => {
+    musicList.forEach((item, i) => {
       listHtml.push(`
                 <div class="item-song" onclick="listSwitchSong(${i})">${item.name}</div>
             `);
@@ -114,7 +119,7 @@
     songItem[playingIndex].classList.add('current');
   }
 
-  function listSwitchSong(i){
+  function listSwitchSong(i) {
     playingIndex = i;
     musicSwitch();
   }
