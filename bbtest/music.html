@@ -17,21 +17,20 @@
         </audio>
     </div>
 
-<script>
-    // let playerWrapper = document.querySelector('.player-wrapper');
-    let player = document.querySelector('#player');
-    let playingIndex = 0;
+    <script>
+        let player = document.querySelector('#player');
+        let playingIndex = 0;
 
 
-    let xhr = new XMLHttpRequest();
-    xhr.open('get','data-store/mp3.json');
-    xhr.onload = function(){
-      let musicList = JSON.parse(xhr.responseText);
-      player.src = musicList[playingIndex].url;
-      player.play();
-    };
-    xhr.send();
+        let xhr = new XMLHttpRequest();
+        xhr.open('get','data-store/mp3.json');
+        xhr.onload = function(){
+          let musicList = JSON.parse(xhr.responseText);
+          player.src = musicList[playingIndex].url;
+          player.play();
+        };
+        xhr.send();
 
-</script>
+    </script>
 </body>
 </html>
