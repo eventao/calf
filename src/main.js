@@ -9,7 +9,10 @@ new Calf({
     timer:'',
     pageTitle:'mvvm test',
     secondaryTitle:'双向绑定测试!',
-
+    user:{
+      name:'小明',
+      age:18
+    },
     students:[
       {
         name:'刘晓华',
