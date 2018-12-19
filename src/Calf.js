@@ -4,6 +4,7 @@ import {Directive} from './Directive.js';
 
 export class Calf{
   constructor(params){
+    this.ObservePrivateData = {};
     this.ObserveVm = {};
     this.vNodes = [];
     this.dataChangeHandles = {};
