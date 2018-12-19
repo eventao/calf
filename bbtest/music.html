@@ -6,7 +6,22 @@
     <style>
         .player-wrapper{
             width:300px;
-            height:90px;
+            height:auto;
+            margin:50px auto;
+        }
+        .player-wrapper .tool{
+            width:100%;
+            height:35px;
+            background:#00a1cb;
+            border-radius:5px;
+            display:flex;
+            align-items: center;
+        }
+        .player-wrapper .tool button{
+            background:none;
+            border:none;
+            cursor:pointer;
+            color:#fff;
         }
     </style>
 </head>
@@ -15,21 +30,43 @@
     <div class="player-wrapper">
         <audio src="" id="player" controls>
         </audio>
+        <div class="tool">
+            <button onclick="musicSwitch(-1)">
+                上一首
+            </button>
+            <button onclick="musicSwitch(1)">
+                下一首
+            </button>
+        </div>
     </div>
 
     <script>
         let player = document.querySelector('#player');
         let playingIndex = 0;
+        let musicList;
 
 
         let xhr = new XMLHttpRequest();
         xhr.open('get','data-store/mp3.json');
         xhr.onload = function(){
-          let musicList = JSON.parse(xhr.responseText);
+          musicList = JSON.parse(xhr.responseText);
+          musicSwitch();
+
           player.src = musicList[playingIndex].url;
           player.play();
         };
         xhr.send();
+
+
+        function musicSwitch(flag){
+          if(flag < 0){
+            playingIndex--;
+          }else if(flag > 0){
+            playingIndex++;
+          }
+          player.src = musicList[playingIndex].url;
+          player.play();
+        }
 
     </script>
 </body>
