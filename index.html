@@ -5,9 +5,42 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Calf frame test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .user-info{
+            display:flex;
+        }
+        .user-info span{
+            display:block;
+        }
+        .user-info span:last-child{
+            margin-left:30px;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
+        <h1>
+            {{pageTitle}}
+        </h1>
+        <div class="user-info">
+            <span>
+                {{user.username.firstName + '.' + user.username.lastName}}
+            </span>
+            <span>
+                {{user.sex ? '女' : '男'}}
+            </span>
+        </div>
+
+        <ul>
+            <li c-for="user of friends">
+                <span>
+                    {{user.username.firstName + '.' + user.username.lastName}}
+                </span>
+                <span>
+                    {{user.sex ? '女' : '男'}}
+                </span>
+            </li>
+        </ul>
 
     </div>
     <script src="./src/main.js"></script>
