@@ -3,40 +3,12 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Calf Test</title>
+    <title>Calf frame test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
     <div id="app">
-        <h1>
-            {{pageTitle}}
-        </h1>
-
-        <h2>
-            {{secondaryTitle}}
-        </h2>
-
-        <p>
-            <input type="text" c-model="secondaryTitle" title>
-        </p>
-        <p>{{aSay}}：现在几点了?</p>
-        <p>{{bSay}}：现在时间是：{{timer}}</p>
-
-
-        <div>
-            <p>
-                当前用户:{{user.name}}-{{user.age}}
-            </p>
-            <p>
-                {{avatar.size1}}&nbsp;&nbsp;{{avatar.size2}}
-            </p>
-            <p c-for="student of students">
-                {{student.name}}&nbsp;&nbsp;{{student.gender}}
-            </p>
-        </div>
 
     </div>
-    <script src="./src/main.js"></script>
-
 </body>
 </html>
