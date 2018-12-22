@@ -48,7 +48,18 @@ window.calf = new Calf({
         sex:0,
       },
     ],
+    now:'',
   },
   mounted(){
+    this.testFrame();
+  },
+  methods:{
+    testFrame(){
+      let now = new Date();
+      this.now = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+      setTimeout(() => {
+        this.testFrame();
+      },1500);
+    }
   }
 });

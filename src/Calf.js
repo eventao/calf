@@ -1,11 +1,20 @@
-import {Util} from './Util';
+import {Utils} from './Util';
 
 export class Calf {
   constructor(params) {
-    this.dataSource = params.data;                // 可修改数据
-    this.cloneData = Util.deepClone(params.data); // 参考数据
+    let instance = {};
+    Object.assign(instance,params.data);
+    Object.assign(instance,params.methods);
+
+    this.dataSource = instance;                   // 可修改数据
+    this.cloneData = Utils.deepClone(params.data); // 参考数据
     this.dataFrameCheck();
     this.dataChangeHandles = {};
+    this.vNodes = [];
+    this.mustacheNodes = {};
+
+
+    params.mounted.call(instance);
   }
   dataFrameCheck(){
     let that = this;
@@ -64,7 +73,7 @@ export class Calf {
         case 1:
           if(element.attributes.length){
             element.attributes.forEach(attr => {
-              this.gendirective.mapDirectElement(element,attr);
+              // this.gendirective.mapDirectElement(element,attr);
             });
           }
           this.genDomTree(element);
