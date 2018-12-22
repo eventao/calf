@@ -59,7 +59,7 @@ window.calf = new Calf({
       this.now = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
       setTimeout(() => {
         this.testFrame();
-      },1500);
+      },1000);
     }
   }
 });

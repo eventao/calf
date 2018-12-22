@@ -1,4 +1,5 @@
-import {Utils} from './Util';
+import './pollyfill';
+import {Utils} from './Utils';
 
 export class Calf {
   constructor(params) {
@@ -8,25 +9,29 @@ export class Calf {
 
     this.dataSource = instance;                   // 可修改数据
     this.cloneData = Utils.deepClone(params.data); // 参考数据
-    this.dataFrameCheck();
     this.dataChangeHandles = {};
     this.vNodes = [];
     this.mustacheNodes = {};
 
-
+    this.dataFrameCheck();
     params.mounted.call(instance);
   }
+
   dataFrameCheck(){
     let that = this;
     that.checkDataObj();
-    window.requestAnimationFrame(function(){
+
+    window.requestAnimationFrame(() => {
       that.dataFrameCheck();
     });
+
   }
   checkDataObj(){
     let that = this;
     for(let [key, value] of Object.entries(that.dataSource)){
-      if(typeof value === 'object' && value !== null) {
+
+      if((typeof value === 'object' || typeof value === 'function') && value !== null) {
+
         if (Array.isArray(value)) {
 
         }else if(value instanceof Function){
@@ -40,11 +45,11 @@ export class Calf {
             handles.forEach(handle => handle(value));
           }
           that.cloneData[key] = value;
+          console.log(`${key}的值为:${value};`);
         }
       }
     }
   }
-
   genDomTree(sourceNode) {
     const that = this;
     sourceNode.childNodes.forEach((element) => {

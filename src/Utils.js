@@ -1,4 +1,4 @@
-export class Util{
+export class Utils{
 
   static deepClone(data){
     let result = {};
