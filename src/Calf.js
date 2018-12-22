@@ -26,6 +26,7 @@ export class Calf {
     });
 
   }
+
   checkDataObj(){
     let that = this;
     for(let [key, value] of Object.entries(that.dataSource)){
@@ -37,7 +38,7 @@ export class Calf {
         }else if(value instanceof Function){
           //todo 函数待处理
         } else {
-          that.checkDataObj();
+          // that.checkDataObj();
         }
       }else{
         if(value !== that.cloneData[key]){
