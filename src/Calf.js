@@ -37,6 +37,7 @@ export class Calf {
         }else if(value instanceof Function){
           //todo 函数待处理
         } else {
+          that.checkDataObj();
         }
       }else{
         if(value !== that.cloneData[key]){
