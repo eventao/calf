@@ -36,5 +36,41 @@ export class Calf {
     }
   }
 
+  genDomTree(sourceNode) {
+    const that = this;
+    sourceNode.childNodes.forEach((element) => {
+      switch(element.nodeType){
+        //文本节点解析
+        case 3:
+          const text = element.nodeValue.trim();
+          let resultArray = Utils.mustach(text);
+          const vNode = {
+            element,
+            keies:resultArray.keies,
+            pieces:resultArray.result,
+            prevPieces:resultArray.result
+          };
+          this.vNodes.push(vNode);
+
+          if(resultArray.keies && resultArray.keies.length){
+            resultArray.keies.forEach(key => {
+              that.mustacheNodes[key] = that.mustacheNodes[key] || [];
+              that.mustacheNodes[key].push(vNode);
+            });
+          }
+          break;
+
+        //元素节点解析
+        case 1:
+          if(element.attributes.length){
+            element.attributes.forEach(attr => {
+              this.gendirective.mapDirectElement(element,attr);
+            });
+          }
+          this.genDomTree(element);
+          break;
+      }
+    });
+  }
 
 }
