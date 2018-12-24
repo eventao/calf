@@ -2,6 +2,10 @@ export class Utils{
 
   static deepClone(data){
     let result = {};
+
+    data.traverse((k, v, kstr) => {
+
+    });
     for (let [key, value] of Object.entries(data)) {
       if(typeof value === 'object'){
         if(Array.isArray(value)){
@@ -17,6 +21,7 @@ export class Utils{
         result[key] = value;
       }
     }
+
     return result;
   }
 
