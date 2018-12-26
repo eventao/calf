@@ -1,4 +1,5 @@
 import {Calf} from './Calf';
+import Test from './test.calf';
 
 window.calf = new Calf({
   el:'#app',
@@ -51,12 +52,17 @@ window.calf = new Calf({
     now:'',
   },
   mounted(){
+    console.log(Test);
     this.testFrame();
   },
   methods:{
     testFrame(){
-      let now = new Date();
-      this.now = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+      let now = new Date(),
+        y = now.getFullYear(),m = now.getMonth() + 1,d = now.getDate(),
+        h = now.getHours(),minu = now.getMinutes(),se = now.getSeconds();
+
+      this.now = `${y > 9 ? y:'0'+y}-${m > 9 ? m:'0'+m}-${d > 9 ? d:'0'+d} ${h > 9 ? h:'0'+h}:${minu > 9 ? minu:'0'+minu}:${se > 9 ? se:'0'+se}`;
+
       setTimeout(() => {
         this.testFrame();
       },1000);

@@ -18,7 +18,7 @@ export class Utils{
           result[key] = this.deepClone(value);
         }
       }else{
-        result[key] = value;
+        result[key] = null;
       }
     }
 
@@ -30,6 +30,7 @@ export class Utils{
     if(text && text.indexOf('{{') > -1){
 
       const leftMustaches = text.split('{{');
+
       leftMustaches.forEach(function(slice){
         if(slice.indexOf('}}') > -1){
           const propertyKey = slice.split('}}')[0];
@@ -47,7 +48,6 @@ export class Utils{
           result.push(slice);
         }
       });
-
     }
 
     return {

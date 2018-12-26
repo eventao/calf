@@ -43,4 +43,13 @@
     traverse(that);
   };
 
+  /**
+   * 对象添加遍历函数
+   */
+  NamedNodeMap.prototype.forEach = function(cb){
+    for(let i = 0,l = this.length;i < l; i++){
+      cb(this[i]);
+    }
+  };
+
 }());

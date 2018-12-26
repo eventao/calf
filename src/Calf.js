@@ -17,7 +17,13 @@ export class Calf {
     this.vNodes = [];
     this.mustacheNodes = {};
 
+    let app = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
+    this.genDomTree(app);
+
+    this.listenDataChange(params.data);
     this.dataFrameCheck();
+    this.dataInitValue(params.data);
+
     params.mounted.call(instance);
   }
 
@@ -36,9 +42,7 @@ export class Calf {
     for (let [key, value] of Object.entries(that.dataSource)) {
 
       if ((typeof value === 'object' || typeof value === 'function') && value !== null) {
-
         if (Array.isArray(value)) {
-
         } else if (value instanceof Function) {
           //todo 函数待处理
         } else {
@@ -48,7 +52,7 @@ export class Calf {
         if (value !== that.cloneData[key]) {
           let handles = that.dataChangeHandles[`${key}-changeHandles`];
           if (handles && handles.length) {
-            handles.forEach(handle => handle(value));
+            handles.forEach(handle => handle(value,key));
           }
           that.cloneData[key] = value;
           // console.log(`${key}的值为:${value};`);
@@ -93,5 +97,50 @@ export class Calf {
       }
     });
   }
+
+  listenDataChange(data){
+    const that = this,keyValues = Object.entries(data);
+    keyValues.forEach(kv => {
+
+      let key = kv[0];
+      let handles = that.dataChangeHandles[key + '-changeHandles'] = that.dataChangeHandles[key + '-changeHandles'] || [];
+      handles.push(function(newValue,dataKey){
+
+        // mustache绑定数据变化
+        if(that.mustacheNodes[dataKey]){
+          that.mustacheNodes[dataKey].forEach(function(vNode){
+
+            if(vNode.pieces && vNode.pieces.length){
+              let prevPieces = [];
+              vNode.pieces.forEach(function(item,j){
+                if(typeof item === 'object' && item.propertyKey === dataKey){
+                  prevPieces.push(newValue);
+                }else{
+                  prevPieces.push(vNode.prevPieces[j]);
+                }
+              });
+              if(prevPieces.length){
+                vNode.prevPieces = prevPieces;
+                vNode.element.nodeValue = prevPieces.join('');
+              }
+            }
+
+          });
+        }
+
+
+      });
+    });
+  }
+
+  dataInitValue(data){
+    const that = this;
+    const keyValues = Object.entries(data);
+    keyValues.forEach(function (kv) {
+      let key = kv[0];
+      that.dataSource[key] = kv[1];
+    });
+  }
+
 
 }

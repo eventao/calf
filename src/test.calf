@@ -1,0 +1,24 @@
+<template>
+    <div class="hello">
+
+    </div>
+</template>
+
+<script>
+
+  export default {
+    name: 'Test',
+    data() {
+    },
+    components: {}
+  }
+</script>
+
+<style scoped>
+    .hello {
+        width:100px;
+        height:40px;
+        background-color:#00a1cb;
+        color:#ffffff;
+    }
+</style>
