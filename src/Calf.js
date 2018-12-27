@@ -29,7 +29,7 @@ export class Calf {
 
   dataFrameCheck() {
     let that = this;
-    that.checkDataObj();
+    that.checkDataObj(that.dataSource, that.cloneData);
 
     window.requestAnimationFrame(() => {
       that.dataFrameCheck();
@@ -37,38 +37,43 @@ export class Calf {
 
   }
 
-  checkDataObj() {
+  checkDataObj(dataObj, cloneObj, pKey) {
+
     let that = this;
-    for (let [key, value] of Object.entries(that.dataSource)) {
+    for (let [key, value] of Object.entries(dataObj)) {
+      let parenesKey = `${pKey ? pKey + '.' : ''}${key}`;
 
       if ((typeof value === 'object' || typeof value === 'function') && value !== null) {
-        if (Array.isArray(value)) {
-        } else if (value instanceof Function) {
-          //todo 函数待处理
+        if (value instanceof Function) {
+          // todo 函数待处理
         } else {
-          // that.checkDataObj();
+          that.checkDataObj(value, cloneObj[key], parenesKey);
         }
       } else {
-        if (value !== that.cloneData[key]) {
-          let handles = that.dataChangeHandles[`${key}-changeHandles`];
+
+        if (value !== cloneObj[key]) {
+          let handles = that.dataChangeHandles[`${parenesKey}-changeHandles`];
           if (handles && handles.length) {
-            handles.forEach(handle => handle(value,key));
+            handles.forEach(handle => handle(value, parenesKey));
           }
-          that.cloneData[key] = value;
+          cloneObj[key] = value;
           // console.log(`${key}的值为:${value};`);
         }
+
       }
     }
+
   }
 
   genDomTree(sourceNode) {
     const that = this;
-    sourceNode.childNodes.forEach((element) => {
+    sourceNode.childNodes.forEach(element => {
       switch (element.nodeType) {
         //文本节点解析
         case 3:
           const text = element.nodeValue.trim();
           let resultArray = Utils.mustach(text);
+
           const vNode = {
             element,
             keies: resultArray.keies,
@@ -85,8 +90,8 @@ export class Calf {
           }
           break;
 
-        //元素节点解析
         case 1:
+          //元素属性解析
           if (element.attributes.length) {
             element.attributes.forEach(attr => {
               // this.gendirective.mapDirectElement(element,attr);
@@ -98,28 +103,29 @@ export class Calf {
     });
   }
 
-  listenDataChange(data){
-    const that = this,keyValues = Object.entries(data);
+  listenDataChange(data) {
+    const that = this, keyValues = Object.entries(data);
     keyValues.forEach(kv => {
 
       let key = kv[0];
       let handles = that.dataChangeHandles[key + '-changeHandles'] = that.dataChangeHandles[key + '-changeHandles'] || [];
-      handles.push(function(newValue,dataKey){
+      handles.push(function (newValue, dataKey) {
 
         // mustache绑定数据变化
-        if(that.mustacheNodes[dataKey]){
-          that.mustacheNodes[dataKey].forEach(function(vNode){
+        if (that.mustacheNodes[dataKey]) {
+          that.mustacheNodes[dataKey].forEach(function (vNode) {
 
-            if(vNode.pieces && vNode.pieces.length){
+            if (vNode.pieces && vNode.pieces.length) {
+
               let prevPieces = [];
-              vNode.pieces.forEach(function(item,j){
-                if(typeof item === 'object' && item.propertyKey === dataKey){
+              vNode.pieces.forEach(function (item, j) {
+                if (typeof item === 'object' && item.propertyKey === dataKey) {
                   prevPieces.push(newValue);
-                }else{
+                } else {
                   prevPieces.push(vNode.prevPieces[j]);
                 }
               });
-              if(prevPieces.length){
+              if (prevPieces.length) {
                 vNode.prevPieces = prevPieces;
                 vNode.element.nodeValue = prevPieces.join('');
               }
@@ -133,7 +139,7 @@ export class Calf {
     });
   }
 
-  dataInitValue(data){
+  dataInitValue(data) {
     const that = this;
     const keyValues = Object.entries(data);
     keyValues.forEach(function (kv) {
