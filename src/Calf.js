@@ -1,5 +1,6 @@
 import './pollyfill';
 import {Utils} from './Utils';
+import {DomAnalise} from './DomAnalise';
 
 export class Calf {
   constructor(params) {
@@ -20,7 +21,8 @@ export class Calf {
     let app = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.genDomTree(app);
 
-    this.listenDataChange(params.data);
+    this.updateVnode(this.dataSource);
+    // this.listenDataChange(params.data);
     this.dataFrameCheck();
     this.dataInitValue(params.data);
 
@@ -38,11 +40,9 @@ export class Calf {
   }
 
   checkDataObj(dataObj, cloneObj, pKey) {
-
     let that = this;
     for (let [key, value] of Object.entries(dataObj)) {
       let parenesKey = `${pKey ? pKey + '.' : ''}${key}`;
-
       if ((typeof value === 'object' || typeof value === 'function') && value !== null) {
         if (value instanceof Function) {
           // todo 函数待处理
@@ -50,7 +50,6 @@ export class Calf {
           that.checkDataObj(value, cloneObj[key], parenesKey);
         }
       } else {
-
         if (value !== cloneObj[key]) {
           let handles = that.dataChangeHandles[`${parenesKey}-changeHandles`];
           if (handles && handles.length) {
@@ -59,20 +58,19 @@ export class Calf {
           cloneObj[key] = value;
           // console.log(`${key}的值为:${value};`);
         }
-
       }
     }
-
   }
 
   genDomTree(sourceNode) {
+
     const that = this;
     sourceNode.childNodes.forEach(element => {
       switch (element.nodeType) {
         //文本节点解析
         case 3:
           const text = element.nodeValue.trim();
-          let resultArray = Utils.mustach(text);
+          let resultArray = DomAnalise.mustach(text);
 
           const vNode = {
             element,
@@ -101,6 +99,31 @@ export class Calf {
           break;
       }
     });
+  }
+
+  updateVnode(data){
+    let that = this;
+
+    for(let [express,vNode] of Object.entries(that.mustacheNodes)){
+
+      if (vNode.pieces && vNode.pieces.length) {
+        let prevPieces = [];
+        vNode.pieces.forEach(function (item, j) {
+          // if (typeof item === 'object' && item.propertyKey === dataKey) {
+          //   prevPieces.push(newValue);
+          // } else {
+          //   prevPieces.push(vNode.prevPieces[j]);
+          // }
+        });
+        if (prevPieces.length) {
+          vNode.prevPieces = prevPieces;
+          vNode.element.nodeValue = prevPieces.join('');
+        }
+      }
+
+    }
+
+    debugger
   }
 
   listenDataChange(data) {
