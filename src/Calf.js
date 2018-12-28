@@ -104,26 +104,42 @@ export class Calf {
   updateVnode(data){
     let that = this;
 
-    for(let [express,vNode] of Object.entries(that.mustacheNodes)){
+    for(let [express,vNodes] of Object.entries(that.mustacheNodes)){
 
-      if (vNode.pieces && vNode.pieces.length) {
-        let prevPieces = [];
-        vNode.pieces.forEach(function (item, j) {
-          // if (typeof item === 'object' && item.propertyKey === dataKey) {
-          //   prevPieces.push(newValue);
-          // } else {
-          //   prevPieces.push(vNode.prevPieces[j]);
-          // }
+      if (vNodes.length) {
+        vNodes.forEach(vNode => {
+          let prevPieces = [];
+          vNode.pieces.forEach(function (item, j) {
+            if (typeof item === 'object') {
+
+              let declareFunc = [];
+              Object.keys(data).forEach(dataKey => {
+                let code = `let ${dataKey} = ${JSON.stringify(data[dataKey])};`;
+                let fun = new Function(code);
+                declareFunc.push(fun);
+              });
+              declareFunc.forEach(handleFun => handleFun());
+
+              let funcValue = new Function(item.propertyKey);
+              let mValue = funcValue();
+              prevPieces.push(mValue);
+
+            } else {
+              prevPieces.push(vNode.prevPieces[j]);
+            }
+
+          });
+          if (prevPieces.length) {
+            vNode.prevPieces = prevPieces;
+            vNode.element.nodeValue = prevPieces.join('');
+          }
+
         });
-        if (prevPieces.length) {
-          vNode.prevPieces = prevPieces;
-          vNode.element.nodeValue = prevPieces.join('');
-        }
+
       }
 
     }
 
-    debugger
   }
 
   listenDataChange(data) {
