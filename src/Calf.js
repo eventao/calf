@@ -8,58 +8,15 @@ export class Calf {
     Object.assign(instance, params.data);
     Object.assign(instance, params.methods);
 
-    params.data.traverse(function (k, v, kstr) {
-      console.log(`${kstr ? kstr + ',    ' : ''}${k}:${v}`);
-    });
-
     this.dataSource = instance;                   // 可修改数据
-    this.cloneData = Utils.deepClone(params.data); // 参考数据
-    this.dataChangeHandles = {};
     this.vNodes = [];
     this.mustacheNodes = {};
 
     let app = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.genDomTree(app);
-
-    this.updateVnode(this.dataSource);
-    // this.listenDataChange(params.data);
-    this.dataFrameCheck();
-    this.dataInitValue(params.data);
+    this.updateVnode();
 
     params.mounted.call(instance);
-  }
-
-  dataFrameCheck() {
-    let that = this;
-    that.checkDataObj(that.dataSource, that.cloneData);
-
-    window.requestAnimationFrame(() => {
-      that.dataFrameCheck();
-    });
-
-  }
-
-  checkDataObj(dataObj, cloneObj, pKey) {
-    let that = this;
-    for (let [key, value] of Object.entries(dataObj)) {
-      let parenesKey = `${pKey ? pKey + '.' : ''}${key}`;
-      if ((typeof value === 'object' || typeof value === 'function') && value !== null) {
-        if (value instanceof Function) {
-          // todo 函数待处理
-        } else {
-          that.checkDataObj(value, cloneObj[key], parenesKey);
-        }
-      } else {
-        if (value !== cloneObj[key]) {
-          let handles = that.dataChangeHandles[`${parenesKey}-changeHandles`];
-          if (handles && handles.length) {
-            handles.forEach(handle => handle(value, parenesKey));
-          }
-          cloneObj[key] = value;
-          // console.log(`${key}的值为:${value};`);
-        }
-      }
-    }
   }
 
   genDomTree(sourceNode) {
@@ -101,9 +58,8 @@ export class Calf {
     });
   }
 
-  updateVnode(data){
-    let that = this;
-
+  updateVnode(){
+    let that = this,data = that.dataSource;
     for(let [express,vNodes] of Object.entries(that.mustacheNodes)){
 
       if (vNodes.length) {
@@ -111,16 +67,13 @@ export class Calf {
           let prevPieces = [];
           vNode.pieces.forEach(function (item, j) {
             if (typeof item === 'object') {
-
-              let declareFunc = [];
+              let codes = [];
               Object.keys(data).forEach(dataKey => {
                 let code = `let ${dataKey} = ${JSON.stringify(data[dataKey])};`;
-                let fun = new Function(code);
-                declareFunc.push(fun);
+                codes.push(code);
               });
-              declareFunc.forEach(handleFun => handleFun());
 
-              let funcValue = new Function(item.propertyKey);
+              let funcValue = new Function(`${codes.join('')}return ${item.propertyKey}`);
               let mValue = funcValue();
               prevPieces.push(mValue);
 
@@ -131,7 +84,12 @@ export class Calf {
           });
           if (prevPieces.length) {
             vNode.prevPieces = prevPieces;
-            vNode.element.nodeValue = prevPieces.join('');
+            let newValue = prevPieces.join('');
+            if(vNode.value !== newValue){
+              vNode.element.nodeValue = newValue;
+              vNode.value = newValue;
+            }
+            
           }
 
         });
@@ -140,52 +98,11 @@ export class Calf {
 
     }
 
-  }
-
-  listenDataChange(data) {
-    const that = this, keyValues = Object.entries(data);
-    keyValues.forEach(kv => {
-
-      let key = kv[0];
-      let handles = that.dataChangeHandles[key + '-changeHandles'] = that.dataChangeHandles[key + '-changeHandles'] || [];
-      handles.push(function (newValue, dataKey) {
-
-        // mustache绑定数据变化
-        if (that.mustacheNodes[dataKey]) {
-          that.mustacheNodes[dataKey].forEach(function (vNode) {
-
-            if (vNode.pieces && vNode.pieces.length) {
-
-              let prevPieces = [];
-              vNode.pieces.forEach(function (item, j) {
-                if (typeof item === 'object' && item.propertyKey === dataKey) {
-                  prevPieces.push(newValue);
-                } else {
-                  prevPieces.push(vNode.prevPieces[j]);
-                }
-              });
-              if (prevPieces.length) {
-                vNode.prevPieces = prevPieces;
-                vNode.element.nodeValue = prevPieces.join('');
-              }
-            }
-
-          });
-        }
-
-
-      });
+    requestAnimationFrame(function(){
+      that.updateVnode();
     });
   }
 
-  dataInitValue(data) {
-    const that = this;
-    const keyValues = Object.entries(data);
-    keyValues.forEach(function (kv) {
-      let key = kv[0];
-      that.dataSource[key] = kv[1];
-    });
-  }
 
 
 }
