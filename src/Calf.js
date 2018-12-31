@@ -4,18 +4,16 @@ import {DomAnalise} from './DomAnalise';
 export class Calf {
 
   constructor(params) {
-    let instance = {};
-    Object.assign(instance, params.data);
-    Object.assign(instance, params.methods);
-
-    this.dataSource = instance;                   // 可修改数据
+    this.dataSource = {};
+    Object.assign(this.dataSource, params.data);
+    Object.assign(this.dataSource, params.methods);
     this.vNodes = [];
     this.mustacheNodes = {};
-
     let app = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.genDomTree(app);
     this.updateVnode(this.dataSource);
-    params.mounted.call(instance);
+
+    params.mounted.call(this.dataSource);
   }
 
   genDomTree(sourceNode) {
@@ -26,7 +24,6 @@ export class Calf {
         case 3:
           const text = element.nodeValue.trim();
           let resultArray = DomAnalise.mustach(text);
-
           const vNode = {
             element,
             keies: resultArray.keies,
@@ -34,7 +31,6 @@ export class Calf {
             prevPieces: resultArray.result
           };
           this.vNodes.push(vNode);
-
           if (resultArray.keies && resultArray.keies.length) {
             resultArray.keies.forEach(key => {
               that.mustacheNodes[key] = that.mustacheNodes[key] || [];
@@ -45,11 +41,7 @@ export class Calf {
 
         case 1:
           // 元素属性解析
-          if (element.attributes.length) {
-            element.attributes.forEach(attr => {
-              // this.gendirective.mapDirectElement(element,attr);
-            });
-          }
+          DomAnalise.directive(element);
           this.genDomTree(element);
           break;
       }
@@ -59,6 +51,7 @@ export class Calf {
   updateVnode(){
     let that = this,data = that.dataSource;
     for(let [express,vNodes] of Object.entries(that.mustacheNodes)){
+
       if (vNodes.length) {
         vNodes.forEach(vNode => {
           let prevPieces = [];
@@ -72,11 +65,9 @@ export class Calf {
               let funcValue = new Function(`${codes.join('')} return ${item.propertyKey}`);
               let mValue = funcValue();
               prevPieces.push(mValue);
-
             } else {
               prevPieces.push(vNode.prevPieces[j]);
             }
-
           });
           if (prevPieces.length) {
             vNode.prevPieces = prevPieces;
@@ -88,11 +79,16 @@ export class Calf {
           }
         });
       }
+
     }
 
     requestAnimationFrame(function(){
       that.updateVnode();
     })
+
+  }
+
+  static directive(name,params){
 
   }
 

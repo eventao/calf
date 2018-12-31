@@ -28,21 +28,9 @@ export class DomAnalise {
     };
   }
 
-  static keiesCalc(keies,data) {
-    if (keies && keies.length) {
-
-      for(let [key,v] of Object.entries(data)){
-        let declare = new Function(`let ${key} = ${JSON.stringify(v)}`);
-        declare();
-      }
-      keies.forEach(key => {
-        let func;
-        try{
-          func = new Function(key);
-          let result = func();
-        }catch(e){
-          console.log(e);
-        }
+  static directive(element) {
+    if (element.attributes.length) {
+      element.attributes.forEach(attr => {
 
       });
     }

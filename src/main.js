@@ -61,7 +61,12 @@ window.calf = new Calf({
         y = now.getFullYear(),m = now.getMonth() + 1,d = now.getDate(),
         h = now.getHours(),minu = now.getMinutes(),se = now.getSeconds();
 
-      this.now = `${y > 9 ? y:'0'+y}-${m > 9 ? m:'0'+m}-${d > 9 ? d:'0'+d} ${h > 9 ? h:'0'+h}:${minu > 9 ? minu:'0'+minu}:${se > 9 ? se:'0'+se}`;
+      this.now = `${(y+'').padStart('0')}-
+      ${(m+'').padStart('0')}-
+      ${(d+'').padStart('0')} 
+      ${(h+'').padStart('0')}:
+      ${(minu+'').padStart('0')}:
+      ${(se+'').padStart('0')}`;
 
       setTimeout(() => {
         this.testFrame();
