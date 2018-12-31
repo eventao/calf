@@ -28,12 +28,4 @@ export class DomAnalise {
     };
   }
 
-  static directive(element) {
-    if (element.attributes.length) {
-      element.attributes.forEach(attr => {
-
-      });
-    }
-  }
-
 }

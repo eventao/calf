@@ -1,5 +1,6 @@
 import './pollyfill';
 import {DomAnalise} from './DomAnalise';
+import {SystemDirectives} from './System-directives';
 
 export class Calf {
 
@@ -7,12 +8,13 @@ export class Calf {
     this.dataSource = {};
     Object.assign(this.dataSource, params.data);
     Object.assign(this.dataSource, params.methods);
+    this.directiveGen = new SystemDirectives(this);
+
     this.vNodes = [];
     this.mustacheNodes = {};
     let app = typeof params.el === 'string' ? document.querySelector(params.el) : params.el;
     this.genDomTree(app);
     this.updateVnode(this.dataSource);
-
     params.mounted.call(this.dataSource);
   }
 
@@ -38,10 +40,9 @@ export class Calf {
             });
           }
           break;
-
         case 1:
           // 元素属性解析
-          DomAnalise.directive(element);
+          this.directiveGen.attrAnalyse(element,this.directives,this.dataSource);
           this.genDomTree(element);
           break;
       }
@@ -89,7 +90,11 @@ export class Calf {
   }
 
   static directive(name,params){
-
+    Calf.prototype.directives = Calf.prototype.directives || [];
+    Calf.prototype.directives.push({
+      name,
+      params
+    });
   }
 
 }
