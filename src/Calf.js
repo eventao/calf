@@ -112,15 +112,12 @@ export class Calf {
           vNode.pieces.forEach(function (item, j) {
             if (typeof item === 'object') {
 
-              let declareFunc = [];
+              let codes = [];
               Object.keys(data).forEach(dataKey => {
                 let code = `let ${dataKey} = ${JSON.stringify(data[dataKey])};`;
-                let fun = new Function(code);
-                declareFunc.push(fun);
+                codes.push(code);
               });
-              declareFunc.forEach(handleFun => handleFun());
-
-              let funcValue = new Function(item.propertyKey);
+              let funcValue = new Function(`${codes.join('')} return ${item.propertyKey}`);
               let mValue = funcValue();
               prevPieces.push(mValue);
 
