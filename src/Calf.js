@@ -44,7 +44,8 @@ export class Calf {
         case 1:
           // 元素属性解析
           this.directiveGen.attrAnalyse(element, this.directives, this.dataSource);
-          DomAnalise.directive();
+          // DomAnalise.directive();
+
           this.genDomTree(element);
           break;
       }
