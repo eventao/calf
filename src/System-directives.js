@@ -10,7 +10,9 @@ export class SystemDirectives{
           console.log(binding);
         },
         inserted:function(){},
-        update:function(){},
+        update:function(el,binding){
+          debugger
+        },
         componentUpdated:function(){}
       }
     });
