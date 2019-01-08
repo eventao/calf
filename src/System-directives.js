@@ -43,13 +43,19 @@ export class SystemDirectives {
   }
 
   attrAnalyse(element, dires, dataSource) {
-    let attrs = element.attributes;
+    let attrs = element.attributes,result = {};
     attrs.forEach(attr => {
       let found = dires.filter(d => d.name === attr.name);
       if (found.length) {
-        found[0].params.bind(element, {express: attr.value, data: dataSource});
+        let foundAttr = found[0];
+        if(foundAttr.name === 'c-for'){
+          result.isReturnParent = true;
+          element.removeAttribute(foundAttr.name);
+        }
+        foundAttr.params.bind(element, {express: attr.value, data: dataSource});
       }
     });
+    return result;
   }
 
 }

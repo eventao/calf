@@ -43,10 +43,13 @@ export class Calf {
           break;
         case 1:
           // 元素属性解析
-          this.directiveGen.attrAnalyse(element, this.directives, this.dataSource);
+          let f = this.directiveGen.attrAnalyse(element, this.directives, this.dataSource);
           // DomAnalise.directive();
-
-          this.genDomTree(element);
+          if(f.isReturnParent){
+            this.genDomTree(sourceNode);
+          }else{
+            this.genDomTree(element);
+          }
           break;
       }
     });
