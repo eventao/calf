@@ -25,21 +25,21 @@ export class SystemDirectives {
                 parentEle.appendChild(el.cloneNode(true));
               });
               console.log(123);
-
             }
           }
 
         },
-        inserted: function () {
+        inserted: function (el, binding, vnode, oldVnode) {
         },
-        update: function (el, binding) {
-          debugger
+        update: function (el, binding, vnode, oldVnode) {
         },
-        componentUpdated: function () {
+        componentUpdated: function (el, binding, vnode, oldVnode) {
+        },
+        unbind:function(el, binding, vnode, oldVnode){
         }
+
       }
     });
-
   }
 
   attrAnalyse(element, dires, dataSource) {
@@ -48,10 +48,12 @@ export class SystemDirectives {
       let found = dires.filter(d => d.name === attr.name);
       if (found.length) {
         let foundAttr = found[0];
+
         if(foundAttr.name === 'c-for'){
           result.isReturnParent = true;
           element.removeAttribute(foundAttr.name);
         }
+
         foundAttr.params.bind(element, {express: attr.value, data: dataSource});
       }
     });
