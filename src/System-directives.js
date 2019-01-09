@@ -32,6 +32,7 @@ export class SystemDirectives {
         inserted: function (el, binding, vnode, oldVnode) {
         },
         update: function (el, binding, vnode, oldVnode) {
+
         },
         componentUpdated: function (el, binding, vnode, oldVnode) {
         },
@@ -42,22 +43,30 @@ export class SystemDirectives {
     });
   }
 
-  attrAnalyse(element, dires, dataSource) {
-    let attrs = element.attributes,result = {};
+  attrAnalyse(element, dires, dataSource,parents) {
+    let attrs = element.attributes,vNodes = [];
     attrs.forEach(attr => {
       let found = dires.filter(d => d.name === attr.name);
       if (found.length) {
-        let foundAttr = found[0];
-
-        if(foundAttr.name === 'c-for'){
-          result.isReturnParent = true;
-          element.removeAttribute(foundAttr.name);
-        }
-
-        foundAttr.params.bind(element, {express: attr.value, data: dataSource});
+        found.forEach(foundDir => {
+          let now = new Date();
+          let vNode = {
+            id:`${now.getTime()}${Math.random()}`,
+            element,
+            parents,
+            nodeType:1,
+            dir:foundDir.name,
+            express:attr.value,
+            updateHandle:foundDir.params.update,
+            keies:''
+          };
+          let bindData = foundDir.params.bind(element, {express: attr.value, data: dataSource});
+          vNode.keies = bindData ? bindData.keies : '';
+          vNodes.push(vNode);
+        });
       }
     });
-    return result;
+    return vNodes;
   }
 
 }

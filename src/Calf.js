@@ -18,23 +18,26 @@ export class Calf {
     params.mounted.call(this.dataSource);
   }
 
-  genDomTree(sourceNode) {
+  genDomTree(sourceNode,parents) {
     const that = this;
     sourceNode.childNodes.forEach(element => {
       switch (element.nodeType) {
         // 文本节点解析
         case 3:
+          const now = new Date();
           const text = element.nodeValue.trim();
           let resultArray = DomAnalise.mustach(text);
-          const vNode = {
-            element,
-            keies: resultArray.keies,
-            pieces: resultArray.result,
-            prevPieces: resultArray.result,
-            nodeType:3,
-          };
-          this.vNodes.push(vNode);
           if (resultArray.keies && resultArray.keies.length) {
+            const vNode = {
+              id:`${now.getTime()}${Math.random()}`,
+              element,
+              keies: resultArray.keies,
+              pieces: resultArray.result,
+              prevPieces: resultArray.result,
+              nodeType:3,
+              parents
+            };
+            this.vNodes.push(vNode);
             resultArray.keies.forEach(key => {
               that.mustacheNodes[key] = that.mustacheNodes[key] || [];
               that.mustacheNodes[key].push(vNode);
@@ -43,11 +46,12 @@ export class Calf {
           break;
         case 1:
           // 元素属性解析
-          let f = this.directiveGen.attrAnalyse(element, this.directives, this.dataSource);
-          if(f.isReturnParent){
-            this.genDomTree(sourceNode);
+          let vNodes = this.directiveGen.attrAnalyse(element, this.directives, this.dataSource,parents);
+          if(vNodes && vNodes.length){
+            this.vNodes = this.vNodes.concat(vNodes);
+            this.genDomTree(element,vNodes);
           }else{
-            this.genDomTree(element);
+            this.genDomTree(element,vNodes);
           }
           break;
       }
@@ -57,8 +61,12 @@ export class Calf {
   updateVnode() {
     let that = this, data = that.dataSource;
     for (let [express,vNodes] of Object.entries(that.mustacheNodes)) {
-
       vNodes.forEach(vNode => {
+
+        if(vNode.nodeType === 1){
+          console.log(vNode);
+        }
+
         let prevPieces = [];
         vNode.pieces.forEach(function (item, j) {
           if (typeof item === 'object') {
@@ -88,7 +96,7 @@ export class Calf {
 
     requestAnimationFrame(function () {
       that.updateVnode();
-    })
+    });
 
   }
 
