@@ -25,8 +25,6 @@ export class Utils{
     return result;
   }
 
-
-
   static joinMustach(key,value,formatArray){
     let result = [];
     formatArray.forEach(item => {
@@ -37,6 +35,16 @@ export class Utils{
       }
     });
     return result.join('');
+  }
+
+  static invokCodeString(data,codeStr){
+    let codes = [];
+    Object.keys(data).forEach(dataKey => {
+      let code = `let ${dataKey} = ${JSON.stringify(data[dataKey])};`;
+      codes.push(code);
+    });
+    let funcValue = new Function(`${codes.join('')} return ${codeStr}`);
+    return funcValue();
   }
 
 }

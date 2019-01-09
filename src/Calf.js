@@ -1,6 +1,7 @@
 import './pollyfill';
 import {DomAnalise} from './DomAnalise';
 import {SystemDirectives} from './System-directives';
+import {Utils} from './Utils';
 
 export class Calf {
 
@@ -48,6 +49,10 @@ export class Calf {
           // 元素属性解析
           let vNodes = this.directiveGen.attrAnalyse(element, this.directives, this.dataSource,parents);
           if(vNodes && vNodes.length){
+            vNodes.forEach(vNode => {
+              that.mustacheNodes[vNode.dataKey] = that.mustacheNodes[vNode.dataKey] || [];
+              that.mustacheNodes[vNode.dataKey].push(vNode);
+            });
             this.vNodes = this.vNodes.concat(vNodes);
             this.genDomTree(element,vNodes);
           }else{
@@ -64,31 +69,29 @@ export class Calf {
       vNodes.forEach(vNode => {
 
         if(vNode.nodeType === 1){
-          console.log(vNode);
-        }
+          let value = Utils.invokCodeString(data,vNode.dataKey);
+          vNode.updateHandle(vNode.element,{value},vNode,null);
 
-        let prevPieces = [];
-        vNode.pieces.forEach(function (item, j) {
-          if (typeof item === 'object') {
-            let codes = [];
-            Object.keys(data).forEach(dataKey => {
-              let code = `let ${dataKey} = ${JSON.stringify(data[dataKey])};`;
-              codes.push(code);
-            });
-            let funcValue = new Function(`${codes.join('')} return ${item.propertyKey}`);
-            let mValue = funcValue();
-            prevPieces.push(mValue);
-          } else {
-            prevPieces.push(vNode.prevPieces[j]);
+        }else{
+          let prevPieces = [];
+          vNode.pieces.forEach(function (item, j) {
+            if (typeof item === 'object') {
+              let mValue = Utils.invokCodeString(data,item.propertyKey);
+              prevPieces.push(mValue);
+            } else {
+              prevPieces.push(vNode.prevPieces[j]);
+            }
+          });
+          if (prevPieces.length) {
+            vNode.prevPieces = prevPieces;
+            let newNode = prevPieces.join('');
+            if (newNode !== vNode.value) {
+              vNode.element.nodeValue = prevPieces.join('');
+              vNode.value = newNode;
+            }
           }
-        });
-        if (prevPieces.length) {
-          vNode.prevPieces = prevPieces;
-          let newNode = prevPieces.join('');
-          if (newNode !== vNode.value) {
-            vNode.element.nodeValue = prevPieces.join('');
-            vNode.value = newNode;
-          }
+
+
         }
       });
 

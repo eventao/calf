@@ -7,7 +7,7 @@ export class SystemDirectives {
       name: 'c-for',
       params: {
         bind: function (el, binding, vnode, oldVnode) {
-          let split = '', tokenes;
+          let split = '', tokenes, dataToken;
           if (binding.express.indexOf('of') > -1) {
             split = 'of';
           } else if (binding.express.indexOf('in') > -1) {
@@ -16,52 +16,51 @@ export class SystemDirectives {
 
           if (split) {
             tokenes = binding.express.split(split);
-            if(tokenes.length > 1){
-              tokenes.forEach((token,i) => tokenes[i] = token.trim());
+            if (tokenes.length > 1) {
+              tokenes.forEach((token, i) => tokenes[i] = token.trim());
               let parentEle = el.parentNode;
-              let dataKey = tokenes[1],dataList = binding.data[dataKey];
+              dataToken = { dataKey:tokenes[1] };
+              let dataList = binding.data[dataToken.dataKey];
               dataList.forEach(item => {
-                // tokenes[0]
                 parentEle.appendChild(el.cloneNode(true));
               });
-              console.log(123);
             }
           }
-
+          return dataToken;
         },
         inserted: function (el, binding, vnode, oldVnode) {
         },
         update: function (el, binding, vnode, oldVnode) {
-
+          let d = el;
         },
         componentUpdated: function (el, binding, vnode, oldVnode) {
         },
-        unbind:function(el, binding, vnode, oldVnode){
+        unbind: function (el, binding, vnode, oldVnode) {
         }
 
       }
     });
   }
 
-  attrAnalyse(element, dires, dataSource,parents) {
-    let attrs = element.attributes,vNodes = [];
+  attrAnalyse(element, dires, dataSource, parents) {
+    let attrs = element.attributes, vNodes = [];
     attrs.forEach(attr => {
       let found = dires.filter(d => d.name === attr.name);
       if (found.length) {
         found.forEach(foundDir => {
           let now = new Date();
           let vNode = {
-            id:`${now.getTime()}${Math.random()}`,
+            id: `${now.getTime()}${Math.random()}`,
             element,
             parents,
-            nodeType:1,
-            dir:foundDir.name,
-            express:attr.value,
-            updateHandle:foundDir.params.update,
-            keies:''
+            nodeType: 1,
+            dir: foundDir.name,
+            express: attr.value,
+            updateHandle: foundDir.params.update,
+            dataKey: ''
           };
           let bindData = foundDir.params.bind(element, {express: attr.value, data: dataSource});
-          vNode.keies = bindData ? bindData.keies : '';
+          vNode.dataKey = bindData ? bindData.dataKey : '';
           vNodes.push(vNode);
         });
       }

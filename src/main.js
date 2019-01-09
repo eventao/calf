@@ -4,7 +4,7 @@ import {Calf} from './Calf';
 window.calf = new Calf({
   el:'#app',
   data:{
-    pageTitle:'mvvm 测试!',
+    pageTitle:'hello world!',
     user:{
       username:{
         firstName:"Adele",
