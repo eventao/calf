@@ -1,5 +1,13 @@
 # 前端日常记录
 
+## 一百零二、clipboard.js 用于浏览器中js复制网页内容
+**问题**
+在iOS手机中，chrome与safari 都不能复制成功  
+
+**解决**
+要复制的元素必须是input或者textarea，并且要放在form中，  
+参考 https://stackoverflow.com/questions/34045777/copy-to-clipboard-using-javascript-in-ios    
+
 ## 一百零一、You may have an infinite update loop in a component render function
 **问题**
 vue警告 理论上，可能因为修改到循环对象，诱发无限循环。
